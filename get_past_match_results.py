@@ -15,7 +15,7 @@ options.set_headless(True)
 driver = webdriver.Chrome(chrome_options=options)
 
 # データ取得が可能である年度のリストを作成する
-years = [2014,2015,2016,2017]
+years = [2014,2015,2016,2017,2018]
 
 # サイト内のチームindexと対応するチーム名（頭文字）の辞書を作成する
 dict_teams = {1:'G',2:'S',3:'DB',4:'D',5:'T',6:'C',
