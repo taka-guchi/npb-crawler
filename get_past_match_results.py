@@ -6,11 +6,12 @@ from time import sleep
 import datetime
 import csv
 
+URL_TEMPLATE = 'http://baseballdata.jp/{year}/{index}/GResult.html'
+FILENAME_TEMPLATE = 'csv/{year}/{year}_{team}_match_results.csv'
 # データ取得が可能である年度のリストを作成する
-years = [2014,2015,2016,2017,2018]
-
+YEARS = [2014,2015,2016,2017,2018]
 # サイト内のチームindexと対応するチーム名（頭文字）の辞書を作成する
-dict_teams = {1:'G',2:'S',3:'DB',4:'D',5:'T',6:'C',
+DICT_TEAMS = {1:'G',2:'S',3:'DB',4:'D',5:'T',6:'C',
               7:'L',8:'F',9:'M',11:'Bs',12:'H',376:'E'}
 
 def set_options():
@@ -27,7 +28,7 @@ def main():
         # 各年ごとに各チームの試合結果サマリーへアクセスする
         for key, value in dict_teams.items():
             # チームごとにurlを作成する
-            url = ('http://baseballdata.jp/{year}/{index}/GResult.html'.format(year=year,index=key))
+            url = (URL_TEMPLATE.format(year=year,index=key))
 
             # ブラウザでアクセスする
             driver.get(url)
@@ -41,8 +42,7 @@ def main():
             rows = soup.findAll('tr', class_='')
 
             # CSVファイルの設定
-            file_name = 'csv/{year}/{year}_{team_capital}_match_results.csv'
-            csv_file = open(file_name.format(year=year,team_capital=value),
+            csv_file = open(FILENAME_TEMPLATE.format(year=year,team=value),
                         'wt', newline = '', encoding = 'utf-8')
             writer = csv.writer(csv_file)
 
