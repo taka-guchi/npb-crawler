@@ -20,42 +20,46 @@ def set_options():
     options.set_headless(True)
     return options
 
+def write_to_csv(driver, writer):
+    # 「全て見る」リンクを押下して全データを表示させる
+    driver.find_element_by_class_name('allshow').click()
+    sleep(1)
+
+    # HTMLの文字コードをUTF-8に変換して取得する
+    html = driver.page_source.encode('utf-8')
+    soup = BeautifulSoup(html,'html.parser')
+    rows = soup.findAll('tr', class_='')
+    for row in rows:
+        csv_row = []
+        for cell in row.findAll('td', bgcolor=''):
+            csv_row.append(cell.get_text().strip())
+        # 空行は無視する
+        if csv_row:
+            writer.writerow(csv_row)
+
 def main():
-    # ブラウザを起動する
-    driver = webdriver.Chrome(chrome_options=set_options())
+    try:
+        driver = webdriver.Chrome(chrome_options=set_options())
+        driver.set_page_load_timeout(5)
 
-    for year in years:
         # 各年ごとに各チームの試合結果サマリーへアクセスする
-        for key, value in dict_teams.items():
-            # チームごとにurlを作成する
-            url = (URL_TEMPLATE.format(year=year,index=key))
+        for year in YEARS:
+            for index, team in DICT_TEAMS.items():
+                # チームごとの試合結果掲載ページを開く
+                url = (URL_TEMPLATE.format(year=year,index=index))
+                driver.get(url)
+                sleep(1)
 
-            # ブラウザでアクセスする
-            driver.get(url)
-            # 「全て見る」リンクを押下して全データを表示させる
-            driver.find_element_by_class_name('allshow').click()
-            sleep(1)
+                # スクレイピングした試合結果をcsvファイルに書き出す
+                filename = FILENAME_TEMPLATE.format(year=year, team=team)
+                with open(filename, "wt", newline="", encoding="utf-8") as f:
+                    writer = csv.writer(f)
+                    write_to_csv(driver, writer)
 
-            # HTMLの文字コードをUTF-8に変換して取得する
-            html = driver.page_source.encode('utf-8')
-            soup = BeautifulSoup(html,'html.parser')
-            rows = soup.findAll('tr', class_='')
+                print("success {year} {team}".format(year=year, team=team))
 
-            # CSVファイルの設定
-            csv_file = open(FILENAME_TEMPLATE.format(year=year,team=value),
-                        'wt', newline = '', encoding = 'utf-8')
-            writer = csv.writer(csv_file)
-
-            try:
-                for row in rows:
-                    csv_row = []
-                    for cell in row.findAll('td', bgcolor=''):
-                        csv_row.append(cell.get_text().strip())
-                    writer.writerow(csv_row)
-            finally:
-                csv_file.close()
-
-            sleep(1)
+    except Exception as e:
+        print("error_message:{message}".format(message=e))
 
 if __name__ == "__main__":
     main()
