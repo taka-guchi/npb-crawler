@@ -43,7 +43,6 @@ def write_to_csv(driver, writer):
         if csv_row:
             writer.writerow(csv_row)
 
-
 def main():
     try:
         driver = webdriver.Chrome(chrome_options=set_options())
