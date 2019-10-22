@@ -47,7 +47,7 @@ with open(FILENAME_TEMPLATE.format(year=THIS_YEAR), 'w') as f:
                     time = td.find('div', class_='time')
 
                     if team1 and team2:
-                        csv_row.append(date.string)
+                        csv_row.append(str(THIS_YEAR) + '/' + date.string[:-3])
                         csv_row.extend([team1.string, team2.string])
                     if place and time:
                         csv_row.extend([place.string, time.string])
