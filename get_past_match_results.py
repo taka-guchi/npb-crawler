@@ -6,14 +6,6 @@ from time import sleep
 import datetime
 import csv
 
-# ブラウザのオプションを格納する変数を取得する
-options = Options()
-# Headlessモードを有効にする
-# →コメントアウトするとブラウザが実際に立ち上がる
-options.set_headless(True)
-# ブラウザを起動する
-driver = webdriver.Chrome(chrome_options=options)
-
 # データ取得が可能である年度のリストを作成する
 years = [2014,2015,2016,2017,2018]
 
@@ -21,7 +13,16 @@ years = [2014,2015,2016,2017,2018]
 dict_teams = {1:'G',2:'S',3:'DB',4:'D',5:'T',6:'C',
               7:'L',8:'F',9:'M',11:'Bs',12:'H',376:'E'}
 
+def set_options():
+    options = Options()
+    # Headlessモードを有効にする
+    options.set_headless(True)
+    return options
+
 def main():
+    # ブラウザを起動する
+    driver = webdriver.Chrome(chrome_options=set_options())
+
     for year in years:
         # 各年ごとに各チームの試合結果サマリーへアクセスする
         for key, value in dict_teams.items():
