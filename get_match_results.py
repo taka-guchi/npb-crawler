@@ -37,6 +37,8 @@ def write_to_csv(driver, writer):
     soup = BeautifulSoup(html,'html.parser')
     for row in soup.findAll("tr", class_=tr_class):
         csv_row = []
+        for cell in row.findAll("th", class_="pnm"):
+            csv_row.append(cell.get_text().strip())
         for cell in row.findAll("td", bgcolor=""):
             csv_row.append(cell.get_text().strip())
         # 空行は無視する
